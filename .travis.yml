@@ -7,14 +7,14 @@ node_js:
 cache: npm
 branches:
   only:
-    - write-blog # 当hexo分支有新的commit时执行 
+    - write-blog # 当write-blog分支有新的commit时执行 
 script:
   - hexo generate 
 deploy:
   provider: pages
   skip-cleanup: true
   local-dir: public
-  target-branch: master # 注意这里是部署到master, 默认是到gh-pages
+  target-branch: master # 注意这里是部署到master, 而不是默认的gh-pages
   github-token: $GH_TOKEN
   keep-history: true
   on:
