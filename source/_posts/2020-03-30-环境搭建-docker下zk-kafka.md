@@ -107,6 +107,33 @@ $ docker ps -a
 $ docker logs dc9208a3303fee --tail 1000
 ```
 
+## 查看docker容器，并启动
+
+如果正常执行过以上步骤，之后可直接启动docker容器，如下：
+
+查看容器
+```shell
+$ docker ps
+Mac:gitee megapro$ docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                            PORTS               NAMES
+d281bab38702        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 4 minutes ago                            kafka2
+b2ae4f0b7c09        sheepkiller/kafka-manager   "./start-kafka-manag…"   7 days ago          Exited (143) 4 minutes ago                            kafka-manager
+119a70531dbc        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 3 minutes ago                            kafka1
+e1d2bcb81ff2        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 3 days ago                               kafka
+156a5c4c0e41        wurstmeister/zookeeper      "/bin/sh -c '/usr/sb…"   7 days ago          Exited (137) About a minute ago                       zookeeper
+```
+
+启动zookeeper+kafka
+```shell
+$ docker start 156a5c4c0e41
+$ docker start e1d2bcb81ff2
+$ docker start 119a70531dbc
+$ docker start d281bab38702
+$ docker start b2ae4f0b7c09
+
+```
+
+
 ## 做个测试
 
 场景：登录kafka主机，创建一个topic，向topic发送消息，使用consumer接收消息
