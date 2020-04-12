@@ -34,7 +34,30 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	status: active
 ```
 
-其中99.15.217.9 这个IP在下面的命令行中要用
+其中99.15.217.9 这个IP在下面的命令行中要用。
+
+> 注意：为了在多网络环境切换，建议使用ihost文件，配置多组IP和域名对照，之后把所有ip替换为域名：
+>- 公司环境
+
+``` host
+99.15.217.9	kafka1
+99.15.217.9	kafka2
+99.15.217.9	kafka3
+99.15.217.9	zookeeper
+99.15.217.9	kafka-manager
+```
+>- 居家环境
+
+``` host
+192.168.1.4	kafka1
+192.168.1.4	kafka2
+192.168.1.4	kafka3
+192.168.1.4	zookeeper
+192.168.1.4	kafka-manager
+```
+
+如此，只要切换一下ihost，重启docker即可顺利完成环境重启！
+
 
 
 ## 下载zookeeper镜像
