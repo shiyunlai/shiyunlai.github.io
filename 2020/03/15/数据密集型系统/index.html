@@ -5,15 +5,23 @@
   
 
   
-  <title>Archives | Shiyunlai&#39;s Blog</title>
+  <title>数据密集型系统 | Shiyunlai&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Shiyunlai&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="一个应用被称为数据密集型的(Data-Intensive applications),如果数据是其主要挑战（数据量，数据复杂度，数据变化速度），与之相对的是计算密集型，即处理器速度是其瓶颈。现今很多数据都是数据密集型的，而非计算密集型，CPU很少成为瓶颈。这是我们讨论这个问题的价值。 举例，什么算数据密集型应用？  场景1：微博，一条微博产生后，围绕这条数据展开的存储、搜索、转发、刷新 场景2：热">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据密集型系统">
+<meta property="og:url" content="http://yoursite.com/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="Shiyunlai&#39;s Blog">
+<meta property="og:description" content="一个应用被称为数据密集型的(Data-Intensive applications),如果数据是其主要挑战（数据量，数据复杂度，数据变化速度），与之相对的是计算密集型，即处理器速度是其瓶颈。现今很多数据都是数据密集型的，而非计算密集型，CPU很少成为瓶颈。这是我们讨论这个问题的价值。 举例，什么算数据密集型应用？  场景1：微博，一条微博产生后，围绕这条数据展开的存储、搜索、转发、刷新 场景2：热">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/03/15/img/20200315/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F.webp">
+<meta property="article:published_time" content="2020-03-15T04:53:32.000Z">
+<meta property="article:modified_time" content="2020-04-12T07:30:09.482Z">
 <meta property="article:author" content="Shiyunlai">
+<meta property="article:tag" content="数据密集型">
+<meta property="article:tag" content="系统架构">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/03/15/img/20200315/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F.webp">
   
     <link rel="alternate" href="/atom.xml" title="Shiyunlai&#39;s Blog" type="application/atom+xml">
   
@@ -66,216 +74,86 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" class="archive-article-date">
-  <time datetime="2020-03-31T14:38:40.000Z" itemprop="datePublished">Mar 31</time>
+        <section id="main"><article id="post-数据密集型系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" class="article-date">
+  <time datetime="2020-03-15T04:53:32.000Z" itemprop="datePublished">2020-03-15</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
+    <h1 class="article-title" itemprop="name">
+      数据密集型系统
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" class="archive-article-date">
-  <time datetime="2020-03-30T11:44:02.000Z" itemprop="datePublished">Mar 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
-    </h1>
-  
+        <p>一个应用被称为数据密集型的(Data-Intensive applications),如果数据是其主要挑战（数据量，数据复杂度，数据变化速度），与之相对的是计算密集型，即处理器速度是其瓶颈。现今很多数据都是数据密集型的，而非计算密集型，CPU很少成为瓶颈。这是我们讨论这个问题的价值。</p>
+<p>举例，什么算数据密集型应用？</p>
+<ul>
+<li>场景1：微博，一条微博产生后，围绕这条数据展开的存储、搜索、转发、刷新</li>
+<li>场景2：热搜，某条新闻成为热搜，会被大量浏览，评论，转发</li>
+</ul>
+<p>以数据密集型的应用系统常规架构</p>
+<p><img src="../img/20200315/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F.webp" alt="数据密集型应用"></p>
+<p>数据密集型应用的特征：</p>
+<ol>
+<li>数据量</li>
+<li>数据复杂</li>
+<li>数据易变</li>
+<li>I/O是速度瓶颈</li>
+<li>数据有传递需求</li>
+<li>对数据的获取方式： 拉、推</li>
+<li>对数据应用的三个关注点<ul>
+<li>可靠性</li>
+<li>可扩展性</li>
+<li>可维护性</li>
+</ul>
+</li>
+</ol>
+<p>从0开始的大型架构基本是失败的，架构都是演进的。<br>数据密集型架构设计时避免引入“额外复杂度”</p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" class="archive-article-date">
-  <time datetime="2020-03-29T03:37:35.000Z" itemprop="datePublished">Mar 29</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2020-03-19T00:02:59.000Z" itemprop="datePublished">Mar 19</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" data-id="ck8wqamug0009yurng26ybfv8" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/" class="archive-article-date">
-  <time datetime="2020-03-16T00:06:39.000Z" itemprop="datePublished">Mar 16</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
-    </h1>
-  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" rel="tag">数据密集型</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" rel="tag">系统架构</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          nodejs-单进程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/15/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%93%E6%9E%84%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">笔记-计算机结构与核心概念</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" class="archive-article-date">
-  <time datetime="2020-03-15T06:57:00.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/">nodejs-EventLoop事件循环</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/" class="archive-article-date">
-  <time datetime="2020-03-15T06:54:13.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/">nodejs-同步和异步</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/" class="archive-article-date">
-  <time datetime="2020-03-15T06:45:10.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/">nodejs-定时器</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2020-03-15T06:39:34.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/">nodejs-单进程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" class="archive-article-date">
-  <time datetime="2020-03-15T04:53:32.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/">数据密集型系统</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="extend next" rel="next" href="/archives/page/2/">Next &amp;raquo;</a>
-  </nav>
 
 </section>
         

@@ -5,13 +5,17 @@
   
 
   
-  <title>Archives | Shiyunlai&#39;s Blog</title>
+  <title>进程线程 | Shiyunlai&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Shiyunlai&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="比如Apache，Apache是当前世界排名第一的Web服务端软件，它由于支持多线程并发而受到广大服务器技术选型者的欢迎。但发展到后来，Apache在一些WEB的大型应用中也渐渐暴露出它的缺点：阻塞。 那有的同学会奇怪，Apache不是多线程处理并发吗，为什么还会出现阻塞呢？ 要明白这一点我们首先需要了解线程这个概念1.1 什么是线程？ 我们引用官方的解释：线程可以独立运行的最小的CPU单位，可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程线程">
+<meta property="og:url" content="http://yoursite.com/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Shiyunlai&#39;s Blog">
+<meta property="og:description" content="比如Apache，Apache是当前世界排名第一的Web服务端软件，它由于支持多线程并发而受到广大服务器技术选型者的欢迎。但发展到后来，Apache在一些WEB的大型应用中也渐渐暴露出它的缺点：阻塞。 那有的同学会奇怪，Apache不是多线程处理并发吗，为什么还会出现阻塞呢？ 要明白这一点我们首先需要了解线程这个概念1.1 什么是线程？ 我们引用官方的解释：线程可以独立运行的最小的CPU单位，可以">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-19T00:02:59.000Z">
+<meta property="article:modified_time" content="2020-04-12T07:30:09.482Z">
 <meta property="article:author" content="Shiyunlai">
 <meta name="twitter:card" content="summary">
   
@@ -66,216 +70,67 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" class="archive-article-date">
-  <time datetime="2020-03-31T14:38:40.000Z" itemprop="datePublished">Mar 31</time>
+        <section id="main"><article id="post-进程线程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" class="article-date">
+  <time datetime="2020-03-19T00:02:59.000Z" itemprop="datePublished">2020-03-19</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
+    <h1 class="article-title" itemprop="name">
+      进程线程
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" class="archive-article-date">
-  <time datetime="2020-03-30T11:44:02.000Z" itemprop="datePublished">Mar 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
-    </h1>
-  
+        <blockquote><p>比如Apache，Apache是当前世界排名第一的Web服务端软件，它由于支持多线程并发而受到广大服务器技术选型者的欢迎。但发展到后来，Apache在一些WEB的大型应用中也渐渐暴露出它的缺点：阻塞。</p>
+<p>那有的同学会奇怪，Apache不是多线程处理并发吗，为什么还会出现阻塞呢？</p>
+<p>要明白这一点我们首先需要了解线程这个概念<br>1.1 什么是线程？</p>
+<p>我们引用官方的解释：线程可以独立运行的最小的CPU单位，可以在同一个进程里并发运行，共享该进程下的内存地址空间（注意这个特点）。</p>
+<p>我们可以看到同一个进程下的线程是会共享相同的文件和内存的（内存地址空间），所以大家可以想象，当不同的线程需要占用同一个变量时，根据先到先得的原则，先到的线程在运作时，后来的线程只能在旁边等待，也就是加入到了阻塞排队序列。所以这就是造成线程阻塞的原因。</p>
+<p>因此，虽说进程可以支持多个线程，它们看似同时执行，但互相之间并不同步。一个进程中的多个线程共享相同的内存地址空间，这就意味着它们可以访问相同的变量和对象，而且它们从同一堆中分配对象。尽管这让线程之间共享信息变得更容易，因为程序设计者必须小心，确保它们不会妨碍同一进程里的其它线程。<br>了解了多线程并行的缺陷后，我们就可以更好地理解NodeJS的强大所在了。因为NodeJS是异步单线程的！</p>
+<footer><strong>https://www.cnblogs.com/kevin9103/p/5053517.html 从原理上理解Node.js的适用场景</strong></footer></blockquote>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" class="archive-article-date">
-  <time datetime="2020-03-29T03:37:35.000Z" itemprop="datePublished">Mar 29</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2020-03-19T00:02:59.000Z" itemprop="datePublished">Mar 19</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" data-id="ck8wqamul000gyurn24k9gccz" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/" class="archive-article-date">
-  <time datetime="2020-03-16T00:06:39.000Z" itemprop="datePublished">Mar 16</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
-    </h1>
-  
-
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          nodejs-执行栈callstack
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">nodejs-摘抄</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" class="archive-article-date">
-  <time datetime="2020-03-15T06:57:00.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/">nodejs-EventLoop事件循环</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/" class="archive-article-date">
-  <time datetime="2020-03-15T06:54:13.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/">nodejs-同步和异步</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/" class="archive-article-date">
-  <time datetime="2020-03-15T06:45:10.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/">nodejs-定时器</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2020-03-15T06:39:34.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/">nodejs-单进程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" class="archive-article-date">
-  <time datetime="2020-03-15T04:53:32.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/">数据密集型系统</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="extend next" rel="next" href="/archives/page/2/">Next &amp;raquo;</a>
-  </nav>
 
 </section>
         

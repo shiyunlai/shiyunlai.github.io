@@ -68,10 +68,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-nodejs-运行机制阅读摘抄" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/03/03/hello-world/" class="article-date">
-  <time datetime="2020-03-03T00:45:57.837Z" itemprop="datePublished">2020-03-03</time>
+    <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" class="article-date">
+  <time datetime="2020-03-31T14:38:40.000Z" itemprop="datePublished">2020-03-31</time>
 </a>
     
   </div>
@@ -82,7 +82,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/03/hello-world/">Hello World</a>
+      <a class="article-title" href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
     </h1>
   
 
@@ -90,26 +90,53 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+        <p>应用程序处理请求的过程中可以分为两个部分：CPU运算和I/O读写。通常CPU计算速度远高于I/O操作速度，这就导致CPU运算已经完成，但是不得不等待I/O任务完成之后再继续接下来处理。所以I/O会成为某些应用程序的瓶颈所在，假设在I/O密集型应用场景中，一次请求/响应的耗时为100ms，其中90ms花在I/O上。</p>
+<p>  就以上场景，怎样才能让系统能同时处理更多的请求？</p>
+<p>  一种方案是采用多线程，按照并发量开启同等数量的线程或建立可复用的线程池，来提升对请求吞吐量。但是，在大并发场景下，操作系统内核将消耗大量时间切换线程和线程上下文，多线程结构还是无法做到强大的伸缩性。</p>
+<p>  看看Node.js的解决方案！</p>
+<p>  Node采用了单线程的结构，避免了上下文切换了浪费！</p>
+<blockquote>
+<p>“单线程的最大好处，是不用像多线程编程那样处处在意状态的同步问题，这里没有死锁的存在，也没有线程上下文切换所带来的性能上的开销” —— 《深入浅出Node》</p>
+</blockquote>
+<p>  虽然一条线程没有了上下文切换的损耗，但是只用一条线程干活（表面上，实际情况后续分析），怎么能应付大并发量呢？！</p>
+<p>来看网友对Node.js运行机制给出的一个比喻：</p>
+<blockquote>
+<p>…NodeJS在寒风中面对着10万并发大军，OK，没问题，上来敌人一个扔到城里，上来一个又扔到城里。城里全民皆兵，可以很好地消化这些敌人…</p>
+<ul>
+<li><a href="https://www.cnblogs.com/peiyu1988/p/8032982.html" target="_blank" rel="noopener">Nodejs的运行原理-科普篇</a></li>
+</ul>
+</blockquote>
+<p>下图诠释了如上Node.js机制原理</p>
+<p><img src="../img/nodejs/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6.webp" alt="Nodejs运行机制"></p>
+<ul>
+<li>所有同步任务都在主线程上执行，形成一个执行栈</li>
+<li>主线程发起异步请求,相应的工作线程就会去执行异步任务,</li>
+<li>主线程可以继续执行后面的代码</li>
+<li>主线程之外，还存在一个”任务队列”（task queue）。只要异步任务</li>
+<li>有了运行结果，就在”任务队列”之中放置一个事件,也就是一个消息。</li>
+<li>一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。</li>
+<li>主线程把当前的事件执行完成之后,再去读取任务队列,如此反复重复执行,这样就形成了事件循环（Event Loop）。</li>
+<li>只要主线程空了，就会去读取”任务队列”，这就是JavaScript的运行机制。</li>
+<li>这个过程会不断重复。</li>
+</ul>
+<p>（重点）因此，Node.js的单线程并不是真正的单线程，只是开启了单个线程进行业务处理（cpu的运算），同时开启了其他线程专门处理I/O。当一个指令到达主线程，主线程发现有I/O之后，直接把这个事件传给I/O线程，不会等待I/O结束后，再去处理下面的业务，而是拿到一个状态后立即往下走，这就是“单线程”、“异步I/O”。</p>
+<p>I/O处理完之后会有一个回调事件，这个事件会放在一个事件处理队列里头，在进程启动时node会创建一个类似于While(true)的循环，它的每一次轮询（tick）都会去查看是否有事件需要处理，是否有事件关联的回调函数需要处理，如果有就处理，然后加入下一个轮询，如果没有就退出进程，这就是所谓的“事件驱动”。这也从Node的角度解释了什么是”事件驱动”。</p>
+<p>在node.js中，事件主要来源于网络请求，文件I/O等，根据事件的不同对观察者进行了分类，有文件I/O观察者，网络I/O观察者。事件驱动是一个典型的生产者/消费者模型，请求到达观察者那里，事件循环从观察者进行消费，主线程就可以马不停蹄的只关注业务不用再去进行I/O等待。</p>
+<p><img src="../img/nodejs/nodejs-EventLoop.webp" alt="非阻塞IO"></p>
+<p>（1）V8 JavaScript引擎负责解析JavaScript脚本并执行代码。</p>
+<p>（2）解析后的代码，调用Node API。</p>
+<p>（3）libuv库负责NodeAPI的执行。它将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。</p>
+<p>（4）V8引擎再将结果返回给用户。</p>
+<p>看到没，NodeJS的工作原理其实就是事件循环。可以说每一条NodeJS的逻辑都是写在回调函数里面的，而回调函数都是有返回之后才异步执行的！<br>看到这里，你不禁会惊叹，NodeJS如果所有处理都异步，岂不是晓得飞了？错错错！当然不是，不要忘记，NodeJS实现这些的基础是单线程。没错，单线程！一条线程扛起所有操作！<br>你可以想象一下，NodeJS在寒风中面对着10万并发大军，OK，没问题，上来敌人一个扔到城里，上来一个又扔到城里。城里全民皆兵，可以很好地消化这些敌人。但如果上来一个类似于张飞赵云这样的人物，老Node心里一惨，和张飞大战300回合，把他打残了，再扔到城里。那后面的10万大军就得等这300回合。。。<br>所以这说明什么？说明NodeJS不是没有阻塞，而是阻塞不发生在后续回调的流程，而会发生在NodeJS本身对逻辑的计算和处理。我们已经知道，NodeJS的分发能力无比强大，可以循环事件进行异步回调。但如果在循环事件时遇到复杂的逻辑运算，那么单薄的单线程怎么支撑得起上百万的逻辑+并发呢？NodeJS它的所有I/O、网络通信等比较耗时的操作，都可以交给worker threads执行再回调，所以很快。但CPU的正常操作，它就只能自己抗了。<br>说到这里，各位对NodeJS的特性估计也大概有个谱了。所以说适用的场景基本是呼之欲出了~！</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/03/hello-world/" data-id="ck7b68s6a00016uru44r1dynb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" data-id="ck8wqamuq000kyurn7dnz956t" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" rel="tag">阅读摘抄</a></li></ul>
+
     </footer>
   </div>
   
@@ -117,16 +144,12 @@
 
 
   
-    <article id="post-Create-a-blog-site" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-环境搭建-docker下zk-kafka" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/03/01/Create-a-blog-site/" class="article-date">
-  <time datetime="2020-03-01T03:21:21.000Z" itemprop="datePublished">2020-03-01</time>
+    <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" class="article-date">
+  <time datetime="2020-03-30T11:44:02.000Z" itemprop="datePublished">2020-03-30</time>
 </a>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Develop/">Develop</a>►<a class="article-category-link" href="/categories/Develop/Java/">Java</a>►<a class="article-category-link" href="/categories/Develop/Java/Back-end/">Back-end</a>►<a class="article-category-link" href="/categories/Develop/Node-js/">Node.js</a>
-  </div>
-
   </div>
   <div class="article-inner">
     
@@ -135,7 +158,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/01/Create-a-blog-site/">First hexo page</a>
+      <a class="article-title" href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
     </h1>
   
 
@@ -143,34 +166,585 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h1><blockquote>
-<p>hahah : </p>
+        <p>ITP平台中准备使用kafka作为队列，重构升级指令供，于是本地弄一套Kafka方便测试Node.js相关的代码。</p>
+<p>以下环境搭建前提：</p>
+<ol>
+<li>Mac</li>
+<li>Docker 19.03.8</li>
+</ol>
+<h1 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h1><h2 id="查看本机ip"><a href="#查看本机ip" class="headerlink" title="查看本机ip"></a>查看本机ip</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ifconfig en0</span></span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">en0: flags&#x3D;8863&lt;UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST&gt; mtu 1500</span><br><span class="line">	options&#x3D;400&lt;CHANNEL_IO&gt;</span><br><span class="line">	ether f8:ff:c2:44:c0:12 </span><br><span class="line">	inet6 fe80::1804:f18d:fb:655c%en0 prefixlen 64 secured scopeid 0x6 </span><br><span class="line">	inet 99.15.217.9 netmask 0xffffff00 broadcast 99.15.217.255</span><br><span class="line">	nd6 options&#x3D;201&lt;PERFORMNUD,DAD&gt;</span><br><span class="line">	media: autoselect</span><br><span class="line">	status: active</span><br></pre></td></tr></table></figure>
+
+<p>其中99.15.217.9 这个IP在下面的命令行中要用。</p>
+<blockquote>
+<p>注意：为了在多网络环境切换，建议使用ihost文件，配置多组IP和域名对照，之后把所有ip替换为域名：</p>
+<ul>
+<li>公司环境</li>
+</ul>
 </blockquote>
-<h1 id="插入一块代码"><a href="#插入一块代码" class="headerlink" title="插入一块代码"></a>插入一块代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shiyl.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceDemoApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(ServiceDemoApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="再来一段代码"><a href="#再来一段代码" class="headerlink" title="再来一段代码"></a>再来一段代码</h1><figure class="highlight java"><figcaption><span>ToolsAsfServiceApplication.java</span><a href="https://gitee.com/shiyunlai/TTT/blob/master/tools-asf-service/src/main/java/org/tis/tools/asf/ToolsAsfServiceApplication.java" target="_blank" rel="noopener">github</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> org.tis.tools.asf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.ComponentScan;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * &lt;pre&gt;</span></span><br><span class="line"><span class="comment"> * Tools ASF Micro-Service 启动入口.</span></span><br><span class="line"><span class="comment"> * 基于Spring Boot,以jar方式启动</span></span><br><span class="line"><span class="comment"> * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Shiyunlai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2018-03-02</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(<span class="string">"org.tis.tools"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ToolsAsfServiceApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(ToolsAsfServiceApplication<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(ToolsAsfServiceApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">        logger.info(<span class="string">"Tools ASF Service Start Success!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="一个注意"><a href="#一个注意" class="headerlink" title="一个注意"></a>一个注意</h1><blockquote>
-<p>注意：阿咖啡机阿斯利康放假了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">99.15.217.9	kafka1</span><br><span class="line">99.15.217.9	kafka2</span><br><span class="line">99.15.217.9	kafka3</span><br><span class="line">99.15.217.9	zookeeper</span><br><span class="line">99.15.217.9	kafka-manager</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>居家环境</li>
+</ul>
 </blockquote>
-<h1 id="一个-blockquote"><a href="#一个-blockquote" class="headerlink" title="一个 blockquote"></a>一个 blockquote</h1><blockquote><p>Do not just seek happiness for yourself. Seek happiness for all. Through kindness. Through mercy.</p>
-<footer><strong>David Levithan</strong><cite>Wide Awake</cite></footer></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.4	kafka1</span><br><span class="line">192.168.1.4	kafka2</span><br><span class="line">192.168.1.4	kafka3</span><br><span class="line">192.168.1.4	zookeeper</span><br><span class="line">192.168.1.4	kafka-manager</span><br></pre></td></tr></table></figure>
 
-<h1 id="一个链接"><a href="#一个链接" class="headerlink" title="一个链接"></a>一个链接</h1><p><a href="http://shiyunlai.github.io" target="_blank" rel="noopener">shiyunlai’s blog</a></p>
-<h1 id="include-code"><a href="#include-code" class="headerlink" title="include code"></a>include code</h1><figure class="highlight javascript"><figcaption><span>a.js</span><a href="/downloads/code/a.js">view raw</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取服务的IP地址</span></span><br><span class="line"><span class="comment">// 参考自： https://blog.csdn.net/alreadyRAY/article/details/95317309</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> os = <span class="built_in">require</span>(<span class="string">'os'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getIPAdress</span>(<span class="params"></span>) </span>{</span><br><span class="line">    <span class="keyword">const</span> interfaces = os.networkInterfaces()</span><br><span class="line">    <span class="keyword">let</span> internal = <span class="literal">true</span> ;</span><br><span class="line">    <span class="keyword">let</span> locatIp = <span class="string">''</span> ;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> devName <span class="keyword">in</span> interfaces) {</span><br><span class="line">        <span class="keyword">let</span> iface = interfaces[devName]</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; iface.length; i++) {</span><br><span class="line">            <span class="keyword">let</span> alias = iface[i]</span><br><span class="line">            <span class="keyword">if</span> (alias.family === <span class="string">'IPv4'</span> &amp;&amp; alias.address !== <span class="string">'127.0.0.1'</span> &amp;&amp; !alias, internal) {</span><br><span class="line">                locatIp = alias.address</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> locatIp ;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>如此，只要切换一下ihost，重启docker即可顺利完成环境重启！</p>
+<h2 id="下载zookeeper镜像"><a href="#下载zookeeper镜像" class="headerlink" title="下载zookeeper镜像"></a>下载zookeeper镜像</h2><p>$ docker pull wurstmeister/zookeeper</p>
+<h2 id="下载kafka镜像"><a href="#下载kafka镜像" class="headerlink" title="下载kafka镜像"></a>下载kafka镜像</h2><p>$ docker pull wurstmeister/kafka</p>
+<h2 id="下载图形化kafka管理镜像"><a href="#下载图形化kafka管理镜像" class="headerlink" title="下载图形化kafka管理镜像"></a>下载图形化kafka管理镜像</h2><p>$ docker pull sheepkiller/kafka-manager</p>
+<h2 id="下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）"><a href="#下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）" class="headerlink" title="下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）"></a>下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）</h2><p><a href="https://www.jianshu.com/go-wild?ac=2&url=https%3A%2F%2Fissues.apache.org%2Fjira%2Fsecure%2Fattachment%2F12436620%2FZooInspector.zip" target="_blank" rel="noopener">zookeeper-dev-ZooInspector.zip</a></p>
+<p>解压启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar build/zookeeper-dev-ZooInspector.jar</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动zookeeper"><a href="#启动zookeeper" class="headerlink" title="启动zookeeper"></a>启动zookeeper</h2><p>docker run -d –name zookeeper -p 2181:2181 -t wurstmeister/zookeeper</p>
+<h2 id="启动kafka（集群方式）"><a href="#启动kafka（集群方式）" class="headerlink" title="启动kafka（集群方式）"></a>启动kafka（集群方式）</h2><ul>
+<li>kafka节点 1</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=99.15.217.9:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://99.15.217.9:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>kafka节点 2</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d --name kafka1 -p 9093:9093 -e KAFKA_BROKER_ID=1 -e KAFKA_ZOOKEEPER_CONNECT=99.15.217.9:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://99.15.217.9:9093 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9093 -t wurstmeister/kafka</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>kafka节点3</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d --name kafka2 -p 9094:9094 -e KAFKA_BROKER_ID=2 -e KAFKA_ZOOKEEPER_CONNECT=99.15.217.9:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://99.15.217.9:9094 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9094 -t wurstmeister/kafka</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>–name kafka 指定不同的docker容器名称，不要重复</li>
+<li>-e KAFKA_BROKER_ID 指定kafka的Broker序号，不要重复</li>
+<li>-e KAFKA_ZOOKEEPER_CONNECT 指定所用zookeeper的地址端口</li>
+<li>-e KAFKA_ADVERTISED_LISTENERS 指定Kafka的监听端口</li>
+<li>-e KAFKA_LISTENERS 指定Kafka的监听端口</li>
+<li>-t wurstmeister/kafka 所使用的Docker镜像</li>
+</ul>
+</blockquote>
+<h2 id="检测一下启动情况，主要看看端口"><a href="#检测一下启动情况，主要看看端口" class="headerlink" title="检测一下启动情况，主要看看端口"></a>检测一下启动情况，主要看看端口</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netstat -an | grep 2181</span><br><span class="line">netstat -an | grep 9092</span><br><span class="line">netstat -an | grep 9093</span><br><span class="line">netstat -an | grep 9094</span><br></pre></td></tr></table></figure>
+
+<p>再看一看Docker容器情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker ps -a</span></span><br></pre></td></tr></table></figure>
+<p>如果Docker容器启动出现错误，可查看容器运行日志，如，查看id为dc9208a3303fee的容器运行日志的最后1000行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker logs dc9208a3303fee --tail 1000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查看docker容器，并启动"><a href="#查看docker容器，并启动" class="headerlink" title="查看docker容器，并启动"></a>查看docker容器，并启动</h2><p>如果正常执行过以上步骤，之后可直接启动docker容器，如下：</p>
+<p>查看容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker ps</span></span><br><span class="line">Mac:gitee megapro$ docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                            PORTS               NAMES</span><br><span class="line">d281bab38702        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 4 minutes ago                            kafka2</span><br><span class="line">b2ae4f0b7c09        sheepkiller/kafka-manager   "./start-kafka-manag…"   7 days ago          Exited (143) 4 minutes ago                            kafka-manager</span><br><span class="line">119a70531dbc        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 3 minutes ago                            kafka1</span><br><span class="line">e1d2bcb81ff2        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 3 days ago                               kafka</span><br><span class="line">156a5c4c0e41        wurstmeister/zookeeper      "/bin/sh -c '/usr/sb…"   7 days ago          Exited (137) About a minute ago                       zookeeper</span><br></pre></td></tr></table></figure>
+
+<p>启动zookeeper+kafka</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker start 156a5c4c0e41</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start e1d2bcb81ff2</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start 119a70531dbc</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start d281bab38702</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start b2ae4f0b7c09</span></span><br></pre></td></tr></table></figure>
 
 
-<h1 id="Raw"><a href="#Raw" class="headerlink" title="Raw"></a>Raw</h1>
-content
+<h2 id="做个测试"><a href="#做个测试" class="headerlink" title="做个测试"></a>做个测试</h2><p>场景：登录kafka主机，创建一个topic，向topic发送消息，使用consumer接收消息</p>
+<p>进入kafka容器的命令行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker <span class="built_in">exec</span> -ti kafka /bin/bash</span></span><br></pre></td></tr></table></figure>
+<p>进入kafka所在目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> opt/kafka_2.12-1.1.0/bin</span></span><br></pre></td></tr></table></figure>
+<p>创建Replication为2，Partition为2的topic = partopic:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-topics.sh --create --zookeeper 99.15.217.9:2181 --replication-factor 2 --partitions 2 --topic partopic</span></span><br></pre></td></tr></table></figure>
 
+<p>查看topic状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-topics.sh --describe --zookeeper 99.15.217.9:2181 --topic partopic</span></span><br></pre></td></tr></table></figure>
+
+<p>作为Producer生产消息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-console-producer.sh --broker-list 99.15.217.9:9092 --topic partopic</span></span><br></pre></td></tr></table></figure>
+
+<p>新开一个终端，作为Consumer接收消息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker <span class="built_in">exec</span> -it kafka /bin/bash</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> opt/kafka_2.12-1.1.0/bin</span></span><br></pre></td></tr></table></figure>
+
+<p>接收消息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-console-consumer.sh --bootstrap-server 99.15.217.9:9092 --topic partopic --from-beginning</span></span><br><span class="line">···</span><br><span class="line"></span><br><span class="line">至此验证成功！</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 启动kafka管理界面服务kafka-manager</span></span></span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta">$</span><span class="bash"> docker run -itd --restart=always --name=kafka-manager -p 9000:9000 -e ZK_HOSTS=99.15.217.9:2181  sheepkiller/kafka-manager</span></span><br></pre></td></tr></table></figure>
+
+<p>访问: <a href="http://localhost:9000" target="_blank" rel="noopener">http://localhost:9000</a></p>
+<p><img src="../img/soft_install/Kafka-Manager-0.png" alt="0"></p>
+<p>添加一个cluster</p>
+<p><img src="../img/soft_install/Kafka-Manager-1.png" alt="0"></p>
+<p>确定，然后就能查看kafak的集群信息</p>
+<p><img src="../img/soft_install/Kafka-Manager-2.png" alt="0"></p>
+<p>查看topic信息</p>
+<p><img src="../img/soft_install/Kafka-Manager-3.png" alt="0"></p>
+<p>查看Broker们的信息</p>
+<p><img src="../img/soft_install/Kafka-Manager-4.png" alt="0"></p>
+<p>环境好了，去写代码和kafka集成吧！</p>
+<h2 id="跑个Node-js代码试一下"><a href="#跑个Node-js代码试一下" class="headerlink" title="跑个Node.js代码试一下"></a>跑个Node.js代码试一下</h2><p><a href="https://www.npmjs.com/package/kafkajs" target="_blank" rel="noopener">kafkajs Getting Started</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; Kafka &#125; = <span class="built_in">require</span>(<span class="string">'kafkajs'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> kafka = <span class="keyword">new</span> Kafka(&#123;</span><br><span class="line">    clientId: <span class="string">'my-app'</span>,</span><br><span class="line">    brokers: [<span class="string">'127.0.0.1:9092'</span>, <span class="string">'127.0.0.1:9093'</span>]</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> producer = kafka.producer()</span><br><span class="line"><span class="keyword">const</span> consumer = kafka.consumer(&#123; <span class="attr">groupId</span>: <span class="string">'test-group'</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> run = <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">    <span class="comment">// Producing</span></span><br><span class="line">    <span class="keyword">await</span> producer.connect()</span><br><span class="line">    <span class="keyword">await</span> producer.send(&#123;</span><br><span class="line">        topic: <span class="string">'test-topic'</span>,</span><br><span class="line">        messages: [</span><br><span class="line">            &#123; <span class="attr">value</span>: <span class="string">'Hello KafkaJS user!'</span> &#125;,</span><br><span class="line">        ],</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Consuming</span></span><br><span class="line">    <span class="keyword">await</span> consumer.connect()</span><br><span class="line">    <span class="keyword">await</span> consumer.subscribe(&#123; <span class="attr">topic</span>: <span class="string">'test-topic'</span>, <span class="attr">fromBeginning</span>: <span class="literal">true</span> &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> consumer.run(&#123;</span><br><span class="line">        eachMessage: <span class="keyword">async</span> (&#123; topic, partition, message &#125;) =&gt; &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(&#123;</span><br><span class="line">                partition,</span><br><span class="line">                offset: message.offset,</span><br><span class="line">                value: message.value.toString(),</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">run().catch(<span class="built_in">console</span>.error)</span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">npm i kafkajs -S</span></span><br><span class="line"><span class="meta">$</span><span class="bash">node s1.js</span></span><br></pre></td></tr></table></figure>
+
+<p>输出<br><img src="../img/soft_install/Kafka-Manager-5.png" alt="0"></p>
+<h2 id="主要参考资料"><a href="#主要参考资料" class="headerlink" title="主要参考资料"></a>主要参考资料</h2><ul>
+<li><a href="https://www.jianshu.com/p/fe73765ef74d" target="_blank" rel="noopener">Mac 使用 docker 搭建 kafka 集群 + Zookeeper + kafka-manager</a></li>
+<li><a href="https://www.jianshu.com/p/e642793cd5de" target="_blank" rel="noopener">docker 安装zookeeper+kafka单节点</a></li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/01/Create-a-blog-site/" data-id="ck7b68s6100006uruh1ba1nc3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" data-id="ck8wqamuo000jyurngogo1jfy" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TagA/" rel="tag">TagA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TagB/" rel="tag">TagB</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zookeeper/" rel="tag">zookeeper</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="tag">环境搭建</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-nodejs-执行栈callstack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" class="article-date">
+  <time datetime="2020-03-29T03:37:35.000Z" itemprop="datePublished">2020-03-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文对Node.js中的执行栈（Call Stack）学习和认知</p>
+<p>核心：<br>1、执行栈是运行程序代码的地方；<br>2、Node.js主线程执行完栈中所有内容后，紧接着会执行“nextTick队列”中的内容；<br>3、为了简化Node.js运行机制复杂度，将每个需要执行的程序（current function、callback等除了交给Libuv处理的异步I/O任务）都会放回执行栈来运行；</p>
+<p>在阅读官网文档如下内容时，不太理解：</p>
+<blockquote>
+<p>You may have noticed that process.nextTick() was not displayed in the diagram, even though it’s a part of the asynchronous API. This is because process.nextTick() is not technically part of the event loop. Instead, the nextTickQueue will be processed after the current operation is completed, regardless of the current phase of the event loop</p>
+</blockquote>
+<p>经过多次代码运行和文档推敲，我这么理解process.nextTick()的执行时机：</p>
+<blockquote>
+<p>每个需要同步执行的程序都会被放回Call Stack中执行，每次Call Stack被清空后，都会伴随一次nextTick执行时机！</p>
+</blockquote>
+<hr>
+<p>参考： </p>
+<ul>
+<li><a href="https://nodejs.dev/the-nodejs-event-loop" target="_blank" rel="noopener">The Node.js Event Loop</a>一文中通过程序在执行栈中的流转，直观的展示了Node.js借助执行栈执行程序的过程。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" data-id="ck8wqamun000hyurn0prd704a" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-进程线程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" class="article-date">
+  <time datetime="2020-03-19T00:02:59.000Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote><p>比如Apache，Apache是当前世界排名第一的Web服务端软件，它由于支持多线程并发而受到广大服务器技术选型者的欢迎。但发展到后来，Apache在一些WEB的大型应用中也渐渐暴露出它的缺点：阻塞。</p>
+<p>那有的同学会奇怪，Apache不是多线程处理并发吗，为什么还会出现阻塞呢？</p>
+<p>要明白这一点我们首先需要了解线程这个概念<br>1.1 什么是线程？</p>
+<p>我们引用官方的解释：线程可以独立运行的最小的CPU单位，可以在同一个进程里并发运行，共享该进程下的内存地址空间（注意这个特点）。</p>
+<p>我们可以看到同一个进程下的线程是会共享相同的文件和内存的（内存地址空间），所以大家可以想象，当不同的线程需要占用同一个变量时，根据先到先得的原则，先到的线程在运作时，后来的线程只能在旁边等待，也就是加入到了阻塞排队序列。所以这就是造成线程阻塞的原因。</p>
+<p>因此，虽说进程可以支持多个线程，它们看似同时执行，但互相之间并不同步。一个进程中的多个线程共享相同的内存地址空间，这就意味着它们可以访问相同的变量和对象，而且它们从同一堆中分配对象。尽管这让线程之间共享信息变得更容易，因为程序设计者必须小心，确保它们不会妨碍同一进程里的其它线程。<br>了解了多线程并行的缺陷后，我们就可以更好地理解NodeJS的强大所在了。因为NodeJS是异步单线程的！</p>
+<footer><strong>https://www.cnblogs.com/kevin9103/p/5053517.html 从原理上理解Node.js的适用场景</strong></footer></blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" data-id="ck8wqamul000gyurn24k9gccz" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-nodejs-摘抄" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/" class="article-date">
+  <time datetime="2020-03-16T00:06:39.000Z" itemprop="datePublished">2020-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="../img/nodejs/nodejs-%E6%9E%B6%E6%9E%84.jpeg" alt="Nodejs架构"></p>
+<ul>
+<li><p>your code 为编辑代码，node.js 核心，Host environment 为宿主环境（提供各种服务，如文件管理，多线程，多进程，IO etc）<br>这里重点介绍，nodejs组成部分：v8 engine, libuv, builtin modules, native modules以及其他辅助服务。</p>
+</li>
+<li><p>当我们执行node xxx.js的时候，node会先做一些v8初试化，libuv启动的工作，然后交由v8来执行native modules以及我们的js代码。</p>
+</li>
+</ul>
+<p>v8 engine：主要有两个作用 1.虚拟机的功能，执行js代码（自己的代码，第三方的代码和native modules的代码）。</p>
+<p>　　　　　　　　　　　　   2.提供C++函数接口，为nodejs提供v8初始化，创建context，scope等。</p>
+<p>libuv：它是基于事件驱动的异步IO模型库，我们的js代码发出请求，最终由libuv完成，而我们所设置的回调函数则是在libuv触发。</p>
+<p>builtin modules：它是由C++代码写成各类模块，包含了crypto，zlib, file stream etc 基础功能。（v8提供了函数接口，libuv提供异步IO模型库，以及一些nodejs函数，为builtin modules提供服务）。</p>
+<p>native modules：它是由js写成，提供我们应用程序调用的库，同时这些模块又依赖builtin modules来获取相应的服务支持</p>
+<p>简单总结一下：如果把nodejs看做一个黑匣子，起暴露给开发者的接口则是native modules，当我们发起请求时，请求自上而下，穿越native modules，通过builtin modules将请求传送至v8，libuv和其他辅助服务，请求结束，则从下回溯至上，最终调用我们的回调函数。</p>
+<p>这里我们以建立http server为例</p>
+<p><img src="../img/nodejs/nodejs-%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8.png" alt="Nodejs架构"></p>
+<p>如上图所示：v8执行js代码 server.listen()时，会通过一些基础服务到TCPWrap::listen(),TCPWrap是nodejs的內建模块，其通过libuv的api uv_listen()的方式，由libuv来完成异步调用。</p>
+<p>图中1,2,3,4,5步骤标明了调用和返回的路径，这几步很快结束，留下callback TCPWrap::OnConnection()等着所需要的数据准备好后被调用。</p>
+<p>libuv在得到所需要的请求后，会调用callback TCPWrap::OnConnection()，在该函数最后通过 tcp_wrap-&gt;MakeCallback(env-&gt;onconnection_string(), ARRAY_SIZE(argv), argv) 调用V8 engine中的JavaScript callback。</p>
+<p>Node.js内建模块http其实是建立在模块net之上的。如果看net.js代码会发现，其通过 new TCP() 返回的类对象完成后续的TCP connect, bind, open等socket动作。</p>
+<p>可以看到Node.js做的工作像是一座桥。左手V8，右手libuv，将2者有机连接在一起。例如HandleWrap::HandleWrap()中记录了V8 instance中的JavaScript对象以及TCPWrap对象。这样在TCPWrap::OnConnection()中可以拿到这两个对象，执行后续的callback调用。</p>
+<p>来自： <a href="https://www.cnblogs.com/peiyu1988/p/8192066.html" target="_blank" rel="noopener">https://www.cnblogs.com/peiyu1988/p/8192066.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/16/nodejs-%E6%91%98%E6%8A%84/" data-id="ck8wqamuk000dyurna1juehd2" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-nodejs-EventLoop事件循环" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" class="article-date">
+  <time datetime="2020-03-15T06:57:00.000Z" itemprop="datePublished">2020-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/">nodejs-EventLoop事件循环</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>什么是事件循环机制（Event Loop）？</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><blockquote>
+<p>The Node.js JavaScript code runs on a single thread. There is just one thing happening at a time.<br>This is a limitation that’s actually very helpful, as it simplifies a lot how you program without worrying about concurrency issues.<br><a href="https://nodejs.dev/the-nodejs-event-loop" target="_blank" rel="noopener">The Node.js Event Loop（官网）</a></p>
+</blockquote>
+<blockquote>
+<p>The event loop is what allows Node.js to perform non-blocking I/O operations — despite the fact that JavaScript is single-threaded — by offloading operations to the system kernel whenever possible.<br><a href="https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#the-node-js-event-loop-timers-and-process-nexttick" target="_blank" rel="noopener">The Node.js Event Loop, Timers, and process.nextTick()</a></p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" data-id="ck8wqamub0004yurnf0tw89cp" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-nodejs-同步和异步" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/" class="article-date">
+  <time datetime="2020-03-15T06:54:13.000Z" itemprop="datePublished">2020-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/">nodejs-同步和异步</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>什么是非阻塞I/O机制？</p>
+<p>非阻塞 换个说法 叫 异步！及异步I/O机制 —— 技术的业务目的在于：io处理的时候不影响主逻辑的执行。</p>
+<p>非阻塞I/O从名字上便可以理解，为了提高程序的性能，更好的提高线程的利用率，尽量不让线程空闲着。<br>　　比如我们想要读取一个文件，然后再进行一些操作，当然这些操作的前提条件是不需要这个文件的数据，这个时候我们便可以让系统的某个线程去读取文件，同时程序的主线程继续执行下面的操作，程序并不会等待文件读取完毕才继续执行，这就像我们常用的ajax</p>
+<p>单线程、事件驱动、非阻塞I/O,我的理解是事件驱动只是为了实现非阻塞的方式，非阻塞才是目的</p>
+<p>作者：小弋呀<br>链接：<a href="https://www.jianshu.com/p/14bb2b4038d3" target="_blank" rel="noopener">https://www.jianshu.com/p/14bb2b4038d3</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>同步和异步分别指什么？</p>
+<p>主线程完全可以不管IO设备，挂起处于等待中的任务，先运行排在后面的任务。等到IO设备返回了结果，再回过头，把挂起的任务继续执行下去。</p>
+<p>于是，所有任务可以分成两种，一种是同步任务（synchronous），另一种是异步任务（asynchronous）。同步任务指的是，在主线程上排队执行的任务，只有前一个任务执行完毕，才能执行后一个任务；异步任务指的是，不进入主线程、而进入”任务队列”（task</p>
+<p>queue）的任务，只有”任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行。</p>
+<p>具体来说，异步执行的运行机制如下。（同步执行也是如此，因为它可以被视为没有异步任务的异步执行。）</p>
+<p>（1）所有同步任务都在主线程上执行，形成一个执行栈（execution context stack）。</p>
+<p>（2）主线程之外，还存在一个”任务队列”（task</p>
+<p>queue）。只要异步任务有了运行结果，就在”任务队列”之中放置一个事件。</p>
+<p>（3）一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。</p>
+<p>（4）主线程不断重复上面的第三步。</p>
+<p>异步是如何产生的？</p>
+<p>说了这么多，比个例子吧。我在网上定了个外卖，老板在店里安排人给我派送，定完外卖之后开始打游戏，正打着激烈的时候派送员来了，玩的正嗨呢，没空开门，结果派送员在门外等了1一分钟才去开门，至此我定外卖的这个过程也就结束了。<br>　　在这个例子中我就相当于主线程，我定了外卖后这个单子就会加入到店铺的订单列表，就相当于一个事件加入到了事件队列，老板就是这个libuv，他在店里运筹帷幄安排人员给我做饭，然后送外卖，即分配线程执行事件任务，当送回来时如果我是空闲的我就会立刻开门收快递，但是当时我正忙着（打游戏很重要），所以派送员久等了一会，即事件执行之后的回调函数是否会立即执行要看主线程是否空闲。</p>
+<h2 id="代码举例"><a href="#代码举例" class="headerlink" title="代码举例"></a>代码举例</h2><p>同步代码举例</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'我要做第一件事情'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'我要做第二件事情'</span>);</span><br></pre></td></tr></table></figure>
+<p>顺序输出：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">我要做第一件事情</span><br><span class="line">我要做第二件事情</span><br></pre></td></tr></table></figure>
+
+<p>异步代码举例</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'我要做第一件事情'</span>);</span><br><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'我突然有事,晚点再做第二件事情'</span>);</span><br><span class="line">&#125;,<span class="number">1000</span>)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'我要做第三件事情'</span>);</span><br></pre></td></tr></table></figure>
+<p>输出为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我要做第一件事情</span><br><span class="line">我要做第三件事情</span><br><span class="line">我突然有事,晚点再做第二件事情</span><br></pre></td></tr></table></figure>
+
+<p>这段代码的实现就叫做异步,也就是说不完全按照顺序去做,<br>突发情况,第二件事情不能立刻完成,所以等待一段时间再去完成,<br>优先去做后面的第三件事情,这样就不耽搁时间。</p>
+<blockquote>
+<p>为什么需要异步？<br>前面提过JavaScript是单线程的,<br>那么单线程就意味着，所有任务需要排队，前一个任务结束，才会执行后一个任务。如果前一个任务耗时很长，后一个任务就不得不一直等着。<br>如果排队是因为计算量大，CPU忙不过来，倒也算了，但是很多时候CPU是闲着的，因为IO设备（输入输出设备）很慢（比如Ajax操作从网络读取数据），不得不等着结果出来，再往下执行。<br>JavaScript语言的设计者意识到，这时主线程完全可以不管IO设备，挂起处于等待中的任务，先运行排在后面的任务。等到IO设备返回了结果，再回过头，把挂起的任务继续执行下去。<br>所以这就是异步过程的由来。</p>
+</blockquote>
+<blockquote>
+<p>如何实现异步？<br>1.主线程发起一个异步请求，相应的工作线程接收请求并告知主线程已收到(异步函数返回)；<br>2.主线程可以继续执行后面的代码，同时工作线程执行异步任务；<br>3.工作线程完成工作后，通知主线程；<br>4.主线程收到通知后，执行一定的动作(调用回调函数)。</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/" data-id="ck8wqamud0006yurn1ufvb1cj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-nodejs-定时器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/" class="article-date">
+  <time datetime="2020-03-15T06:45:10.000Z" itemprop="datePublished">2020-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/">nodejs-定时器</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="setTimeout"><a href="#setTimeout" class="headerlink" title="setTimeout"></a>setTimeout</h2><h2 id="setInterval"><a href="#setInterval" class="headerlink" title="setInterval"></a>setInterval</h2><h2 id="process-nextTick和setImmediate"><a href="#process-nextTick和setImmediate" class="headerlink" title="process.nextTick和setImmediate"></a>process.nextTick和setImmediate</h2><ul>
+<li>tick，一圈完整Event Loop过程，叫做一次tick。</li>
+</ul>
+<p>process.nextTick方法可以在当前”执行栈”的尾部—-下一次Event Loop（主线程读取”任务队列”）之前—-触发回调函数。也就是说，它指定的任务总是发生在所有异步任务之前。</p>
+<p>setImmediate方法则是在当前”任务队列”的尾部添加事件，也就是说，它指定的任务总是在下一次Event Loop时执行，这与setTimeout(fn, 0)很像。</p>
+<p>process.nextTick和setImmediate的一个重要区别：多个process.nextTick语句总是在当前”执行栈”一次执行完，多个setImmediate可能则需要多次loop才能执行完。事实上，这正是Node.js</p>
+<p>由于process.nextTick指定的回调函数是在本次”事件循环”触发，而setImmediate指定的是在下次”事件循环”触发，所以很显然，前者总是比后者发生得早，而且执行效率也高（因为不用检查”任务队列”）。</p>
+<p>作者：猩崽大叔<br>链接：<a href="https://www.jianshu.com/p/904f7e37f95b" target="_blank" rel="noopener">https://www.jianshu.com/p/904f7e37f95b</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>—– 未整理过的内容</p>
+<h2 id="macrotasks与microtasks的区别"><a href="#macrotasks与microtasks的区别" class="headerlink" title="macrotasks与microtasks的区别"></a>macrotasks与microtasks的区别</h2><ul>
+<li>macrotasks: setTimeout setInterval setImmediate I/O UI渲染</li>
+<li>microtasks: Promise process.nextTick Object.observe MutationObserver</li>
+</ul>
+<p>一个事件循环(EventLoop)中会有一个正在执行的任务(Task)，而这个任务就是从 macrotask 队列中来的。当这个 macrotask 执行结束后所有可用的 microtask 将会在同一个事件循环中执行，当这些 microtask 执行结束后还能继续添加 microtask 一直到整个 microtask 队列执行结束。<br>通俗点来理解的话,就是microtask会在当前循环中执行完成,而macrotask会在下一个循环中执行<br>下面我们来看一段代码,自己思考一下运行结果会是什么?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'1'</span>);</span><br><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'2'</span>);</span><br><span class="line">  <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'promise-start2'</span>);</span><br><span class="line">    resolve();</span><br><span class="line">  &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'promise-end2'</span>);</span><br><span class="line"> &#125;);</span><br><span class="line">&#125;,<span class="number">0</span>);</span><br><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'promise-start'</span>);</span><br><span class="line">    resolve();</span><br><span class="line">&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'promise-end'</span>);</span><br><span class="line">&#125;);</span><br><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'3'</span>);</span><br><span class="line">&#125;,<span class="number">0</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'4'</span>);</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span></span><br><span class="line">promise-start</span><br><span class="line"><span class="number">4</span></span><br><span class="line">promise-end</span><br><span class="line"><span class="number">2</span></span><br><span class="line">promise-start2</span><br><span class="line">promise-end2</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>实际的执行顺序为：</p>
+<p>从结果可以看出<br>主进程这个macroTask（也就是1、promise-start和4）执行完了，自然会去执行promise then这个microTask。这是第一个循环。之后的setTimeout和promise属于第二个循环。</p>
+<p>这边有一个注意点,就是主进程的代码也属于macroTask,因为主线程可以被视为没有异步任务的异步执行</p>
+<h2 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h2><ul>
+<li>setTimeout</li>
+<li>setInterval</li>
+</ul>
+<p>定时器功能主要由setTimeout()和setInterval()这两个函数来完成，它们的内部运行机制完全一样，区别在于前者指定的代码是一次性执行，后者则为反复执行。以下主要讨论setTimeout()。</p>
+<p>举例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'1'</span>);</span><br><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'2'</span>);</span><br><span class="line">&#125;,<span class="number">0</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'3'</span>);</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>setTimeout(fn,0)的含义是，指定某个任务在主线程最早可得的空闲时间执行，也就是说，尽可能早得执行。它在”任务队列”的尾部添加一个事件，因此要等到同步任务和”任务队列”现有的事件都处理完，才会得到执行。</p>
+<p>需要注意的是，setTimeout()只是将事件插入了”任务队列”，必须等到当前代码（执行栈）执行完，主线程才会去执行它指定的回调函数。要是当前代码耗时很长，有可能要等很久，所以并没有办法保证，回调函数一定会在setTimeout()指定的时间执行。</p>
+<p>作者：Toniqian<br>链接：<a href="https://www.jianshu.com/p/561db8ff3e7a" target="_blank" rel="noopener">https://www.jianshu.com/p/561db8ff3e7a</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p><a href="https://www.jianshu.com/p/904f7e37f95b" target="_blank" rel="noopener">https://www.jianshu.com/p/904f7e37f95b</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/" data-id="ck8wqamue0008yurncrb8h5qt" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" rel="tag">开发技能</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-nodejs-单线程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" class="article-date">
+  <time datetime="2020-03-15T06:39:34.000Z" itemprop="datePublished">2020-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/">nodejs-单进程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Node-js的单进程"><a href="#Node-js的单进程" class="headerlink" title="Node.js的单进程"></a>Node.js的单进程</h2><p>总结：单进程，主线程，多工作线程的结构，他们各自分工明确，统一由主线程调度执行；</p>
+<p>JavaScritp是单线程的<br>Node.js基于Javascript编写，因此执行上也是单线程的，但是Node.js作为一个平台，基于libuv引入了线程池，专门处理非阻塞I/O事件。</p>
+<p>为什么JavaScript是单线程？<br>JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一件事。那么，为什么JavaScript不能有多个线程呢？这样能提高效率啊。<br>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？<br>所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征，将来也不会改变。<br>**<br>为了利用多核CPU的计算能力，HTML5提出Web Worker标准，允许JavaScript脚本创建多个线程，但是子线程完全受主线程控制，且不得操作DOM。所以，这个新标准并没有改变JavaScript单线程的本质。<br>**</p>
+<p>JS引擎中负责解释和执行JavaScript代码的线程只有一个。我们叫它主线程。</p>
+<p>但是实际上还存在其他的线程。例如：处理AJAX请求的线程、处理DOM事件的线程、定时器线程、读写文件的线程(例如在Node.js中)等等。这些线程可能存在于JS引擎之内，也可能存在于JS引擎之外，在此我们不做区分。不妨叫它们工作线程。</p>
+<p>作者：Toniqian<br>链接：<a href="https://www.jianshu.com/p/561db8ff3e7a" target="_blank" rel="noopener">https://www.jianshu.com/p/561db8ff3e7a</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>Node.js是单进程还是多线程？</p>
+<p>JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一件事。那么，为什么JavaScript不能有多个线程呢？这样能提高效率啊。</p>
+<p>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
+<p>所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征，将来也不会改变。</p>
+<p>为了利用多核CPU的计算能力，HTML5提出Web Worker标准，允许JavaScript脚本创建多个线程，但是子线程完全受主线程控制，且不得操作DOM。所以，这个新标准并没有改变JavaScript单线程的本质。</p>
+<p>作者：猩崽大叔<br>链接：<a href="https://www.jianshu.com/p/904f7e37f95b" target="_blank" rel="noopener">https://www.jianshu.com/p/904f7e37f95b</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>单线程是任务按照顺序执行的，并且每次只执行一个任务，只有前面的任务执行完成以后，后面的任务才执行。在JS引擎中负责解释和执行Javascript代码的线程只有一个，即主线程。但实际上还存在其他的线程。例如处理AJAX请求的线程、处理DOM事件的线程、定时器线程、读写文件的线程等。这些线程可能存在与JS引擎之内，也可能存在与JS引擎之外，这些线程为工作线程。</p>
+<p>其实Nodejs对外展示是单线程的，但内部其实是多线程的，Node本身的主线程主要就是起不断往返调度的作用</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" data-id="ck8wqamuc0005yurn5zf86n1f" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-数据密集型系统" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" class="article-date">
+  <time datetime="2020-03-15T04:53:32.000Z" itemprop="datePublished">2020-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/">数据密集型系统</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一个应用被称为数据密集型的(Data-Intensive applications),如果数据是其主要挑战（数据量，数据复杂度，数据变化速度），与之相对的是计算密集型，即处理器速度是其瓶颈。现今很多数据都是数据密集型的，而非计算密集型，CPU很少成为瓶颈。这是我们讨论这个问题的价值。</p>
+<p>举例，什么算数据密集型应用？</p>
+<ul>
+<li>场景1：微博，一条微博产生后，围绕这条数据展开的存储、搜索、转发、刷新</li>
+<li>场景2：热搜，某条新闻成为热搜，会被大量浏览，评论，转发</li>
+</ul>
+<p>以数据密集型的应用系统常规架构</p>
+<p><img src="../img/20200315/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F.webp" alt="数据密集型应用"></p>
+<p>数据密集型应用的特征：</p>
+<ol>
+<li>数据量</li>
+<li>数据复杂</li>
+<li>数据易变</li>
+<li>I/O是速度瓶颈</li>
+<li>数据有传递需求</li>
+<li>对数据的获取方式： 拉、推</li>
+<li>对数据应用的三个关注点<ul>
+<li>可靠性</li>
+<li>可扩展性</li>
+<li>可维护性</li>
+</ul>
+</li>
+</ol>
+<p>从0开始的大型架构基本是失败的，架构都是演进的。<br>数据密集型架构设计时避免引入“额外复杂度”</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" data-id="ck8wqamug0009yurng26ybfv8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" rel="tag">数据密集型</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" rel="tag">系统架构</a></li></ul>
 
     </footer>
   </div>
@@ -180,26 +754,24 @@ content
 
   
 
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+  </nav>
 
 </section>
         
           <aside id="sidebar">
   
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Develop/">Develop</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Develop/Java/">Java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Develop/Java/Back-end/">Back-end</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Develop/Node-js/">Node.js</a></li></ul></li></ul>
-    </div>
-  </div>
-
 
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TagA/" rel="tag">TagA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TagB/" rel="tag">TagB</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript%E5%BC%95%E6%93%8E/" rel="tag">JavaScript引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zookeeper/" rel="tag">zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8/" rel="tag">事件驱动</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E5%88%B0%E8%80%81/" rel="tag">学到老</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" rel="tag">开发技能</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" rel="tag">数据密集型</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="tag">环境搭建</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" rel="tag">系统架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/" rel="tag">计算机原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" rel="tag">阅读摘抄</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%9E%E9%98%BB%E5%A1%9EI-O/" rel="tag">非阻塞I/O</a></li></ul>
     </div>
   </div>
 
@@ -209,7 +781,7 @@ content
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/TagA/" style="font-size: 10px;">TagA</a> <a href="/tags/TagB/" style="font-size: 10px;">TagB</a>
+      <a href="/tags/JavaScript%E5%BC%95%E6%93%8E/" style="font-size: 10px;">JavaScript引擎</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/Nodejs%E5%8E%9F%E7%90%86/" style="font-size: 15px;">Nodejs原理</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8/" style="font-size: 10px;">事件驱动</a> <a href="/tags/%E5%AD%A6%E5%88%B0%E8%80%81/" style="font-size: 10px;">学到老</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" style="font-size: 10px;">开发技能</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" style="font-size: 10px;">数据密集型</a> <a href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" style="font-size: 10px;">环境搭建</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">系统架构</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/" style="font-size: 10px;">计算机原理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" style="font-size: 10px;">阅读摘抄</a> <a href="/tags/%E9%9D%9E%E9%98%BB%E5%A1%9EI-O/" style="font-size: 10px;">非阻塞I/O</a>
     </div>
   </div>
 
@@ -231,11 +803,23 @@ content
       <ul>
         
           <li>
-            <a href="/2020/03/03/hello-world/">Hello World</a>
+            <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
           </li>
         
           <li>
-            <a href="/2020/03/01/Create-a-blog-site/">First hexo page</a>
+            <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
           </li>
         
       </ul>

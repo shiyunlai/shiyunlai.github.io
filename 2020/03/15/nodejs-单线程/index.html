@@ -5,14 +5,20 @@
   
 
   
-  <title>Archives | Shiyunlai&#39;s Blog</title>
+  <title>nodejs-单进程 | Shiyunlai&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Shiyunlai&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="Node.js的单进程总结：单进程，主线程，多工作线程的结构，他们各自分工明确，统一由主线程调度执行； JavaScritp是单线程的Node.js基于Javascript编写，因此执行上也是单线程的，但是Node.js作为一个平台，基于libuv引入了线程池，专门处理非阻塞I&#x2F;O事件。 为什么JavaScript是单线程？JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejs-单进程">
+<meta property="og:url" content="http://yoursite.com/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Shiyunlai&#39;s Blog">
+<meta property="og:description" content="Node.js的单进程总结：单进程，主线程，多工作线程的结构，他们各自分工明确，统一由主线程调度执行； JavaScritp是单线程的Node.js基于Javascript编写，因此执行上也是单线程的，但是Node.js作为一个平台，基于libuv引入了线程池，专门处理非阻塞I&#x2F;O事件。 为什么JavaScript是单线程？JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-15T06:39:34.000Z">
+<meta property="article:modified_time" content="2020-04-12T07:30:09.482Z">
 <meta property="article:author" content="Shiyunlai">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="Nodejs原理">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Shiyunlai&#39;s Blog" type="application/atom+xml">
@@ -66,216 +72,76 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" class="archive-article-date">
-  <time datetime="2020-03-31T14:38:40.000Z" itemprop="datePublished">Mar 31</time>
+        <section id="main"><article id="post-nodejs-单线程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" class="article-date">
+  <time datetime="2020-03-15T06:39:34.000Z" itemprop="datePublished">2020-03-15</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
+    <h1 class="article-title" itemprop="name">
+      nodejs-单进程
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" class="archive-article-date">
-  <time datetime="2020-03-30T11:44:02.000Z" itemprop="datePublished">Mar 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
-    </h1>
-  
+        <h2 id="Node-js的单进程"><a href="#Node-js的单进程" class="headerlink" title="Node.js的单进程"></a>Node.js的单进程</h2><p>总结：单进程，主线程，多工作线程的结构，他们各自分工明确，统一由主线程调度执行；</p>
+<p>JavaScritp是单线程的<br>Node.js基于Javascript编写，因此执行上也是单线程的，但是Node.js作为一个平台，基于libuv引入了线程池，专门处理非阻塞I/O事件。</p>
+<p>为什么JavaScript是单线程？<br>JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一件事。那么，为什么JavaScript不能有多个线程呢？这样能提高效率啊。<br>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？<br>所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征，将来也不会改变。<br>**<br>为了利用多核CPU的计算能力，HTML5提出Web Worker标准，允许JavaScript脚本创建多个线程，但是子线程完全受主线程控制，且不得操作DOM。所以，这个新标准并没有改变JavaScript单线程的本质。<br>**</p>
+<p>JS引擎中负责解释和执行JavaScript代码的线程只有一个。我们叫它主线程。</p>
+<p>但是实际上还存在其他的线程。例如：处理AJAX请求的线程、处理DOM事件的线程、定时器线程、读写文件的线程(例如在Node.js中)等等。这些线程可能存在于JS引擎之内，也可能存在于JS引擎之外，在此我们不做区分。不妨叫它们工作线程。</p>
+<p>作者：Toniqian<br>链接：<a href="https://www.jianshu.com/p/561db8ff3e7a" target="_blank" rel="noopener">https://www.jianshu.com/p/561db8ff3e7a</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>Node.js是单进程还是多线程？</p>
+<p>JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一件事。那么，为什么JavaScript不能有多个线程呢？这样能提高效率啊。</p>
+<p>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
+<p>所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征，将来也不会改变。</p>
+<p>为了利用多核CPU的计算能力，HTML5提出Web Worker标准，允许JavaScript脚本创建多个线程，但是子线程完全受主线程控制，且不得操作DOM。所以，这个新标准并没有改变JavaScript单线程的本质。</p>
+<p>作者：猩崽大叔<br>链接：<a href="https://www.jianshu.com/p/904f7e37f95b" target="_blank" rel="noopener">https://www.jianshu.com/p/904f7e37f95b</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>单线程是任务按照顺序执行的，并且每次只执行一个任务，只有前面的任务执行完成以后，后面的任务才执行。在JS引擎中负责解释和执行Javascript代码的线程只有一个，即主线程。但实际上还存在其他的线程。例如处理AJAX请求的线程、处理DOM事件的线程、定时器线程、读写文件的线程等。这些线程可能存在与JS引擎之内，也可能存在与JS引擎之外，这些线程为工作线程。</p>
+<p>其实Nodejs对外展示是单线程的，但内部其实是多线程的，Node本身的主线程主要就是起不断往返调度的作用</p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" class="archive-article-date">
-  <time datetime="2020-03-29T03:37:35.000Z" itemprop="datePublished">Mar 29</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2020-03-19T00:02:59.000Z" itemprop="datePublished">Mar 19</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" data-id="ck8wqamuc0005yurn5zf86n1f" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/" class="archive-article-date">
-  <time datetime="2020-03-16T00:06:39.000Z" itemprop="datePublished">Mar 16</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
-    </h1>
-  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          nodejs-定时器
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">数据密集型系统</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" class="archive-article-date">
-  <time datetime="2020-03-15T06:57:00.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-EventLoop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/">nodejs-EventLoop事件循环</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/" class="archive-article-date">
-  <time datetime="2020-03-15T06:54:13.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5/">nodejs-同步和异步</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/" class="archive-article-date">
-  <time datetime="2020-03-15T06:45:10.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%AE%9A%E6%97%B6%E5%99%A8/">nodejs-定时器</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
-  <time datetime="2020-03-15T06:39:34.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/nodejs-%E5%8D%95%E7%BA%BF%E7%A8%8B/">nodejs-单进程</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/" class="archive-article-date">
-  <time datetime="2020-03-15T04:53:32.000Z" itemprop="datePublished">Mar 15</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/03/15/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B%E7%B3%BB%E7%BB%9F/">数据密集型系统</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-  <nav id="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="extend next" rel="next" href="/archives/page/2/">Next &amp;raquo;</a>
-  </nav>
 
 </section>
         

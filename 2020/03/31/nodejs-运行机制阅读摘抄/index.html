@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>nodejs-运行机制学习摘抄 | Shiyunlai&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="应用程序处理请求的过程中可以分为两个部分：CPU运算和I&#x2F;O读写。通常CPU计算速度远高于I&#x2F;O操作速度，这就导致CPU运算已经完成，但是不得不等待I&#x2F;O任务完成之后再继续接下来处理。所以I&#x2F;O会成为某些应用程序的瓶颈所在，假设在I&#x2F;O密集型应用场景中，一次请求&#x2F;响应的耗时为100ms，其中90ms花在I&#x2F;O上。   就以上场景，怎样才能让系统能同时处理更多的请求？   一种方案是采用多线程，按照">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejs-运行机制学习摘抄">
+<meta property="og:url" content="http://yoursite.com/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/index.html">
+<meta property="og:site_name" content="Shiyunlai&#39;s Blog">
+<meta property="og:description" content="应用程序处理请求的过程中可以分为两个部分：CPU运算和I&#x2F;O读写。通常CPU计算速度远高于I&#x2F;O操作速度，这就导致CPU运算已经完成，但是不得不等待I&#x2F;O任务完成之后再继续接下来处理。所以I&#x2F;O会成为某些应用程序的瓶颈所在，假设在I&#x2F;O密集型应用场景中，一次请求&#x2F;响应的耗时为100ms，其中90ms花在I&#x2F;O上。   就以上场景，怎样才能让系统能同时处理更多的请求？   一种方案是采用多线程，按照">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/03/31/img/nodejs/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6.webp">
+<meta property="og:image" content="http://yoursite.com/2020/03/31/img/nodejs/nodejs-EventLoop.webp">
+<meta property="article:published_time" content="2020-03-31T14:38:40.000Z">
+<meta property="article:modified_time" content="2020-04-12T07:30:09.482Z">
+<meta property="article:author" content="Shiyunlai">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="阅读摘抄">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/03/31/img/nodejs/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6.webp">
+  
+    <link rel="alternate" href="/atom.xml" title="Shiyunlai&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Shiyunlai&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Keep hungry, keep foolish</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-nodejs-运行机制阅读摘抄" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" class="article-date">
+  <time datetime="2020-03-31T14:38:40.000Z" itemprop="datePublished">2020-03-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      nodejs-运行机制学习摘抄
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>应用程序处理请求的过程中可以分为两个部分：CPU运算和I/O读写。通常CPU计算速度远高于I/O操作速度，这就导致CPU运算已经完成，但是不得不等待I/O任务完成之后再继续接下来处理。所以I/O会成为某些应用程序的瓶颈所在，假设在I/O密集型应用场景中，一次请求/响应的耗时为100ms，其中90ms花在I/O上。</p>
+<p>  就以上场景，怎样才能让系统能同时处理更多的请求？</p>
+<p>  一种方案是采用多线程，按照并发量开启同等数量的线程或建立可复用的线程池，来提升对请求吞吐量。但是，在大并发场景下，操作系统内核将消耗大量时间切换线程和线程上下文，多线程结构还是无法做到强大的伸缩性。</p>
+<p>  看看Node.js的解决方案！</p>
+<p>  Node采用了单线程的结构，避免了上下文切换了浪费！</p>
+<blockquote>
+<p>“单线程的最大好处，是不用像多线程编程那样处处在意状态的同步问题，这里没有死锁的存在，也没有线程上下文切换所带来的性能上的开销” —— 《深入浅出Node》</p>
+</blockquote>
+<p>  虽然一条线程没有了上下文切换的损耗，但是只用一条线程干活（表面上，实际情况后续分析），怎么能应付大并发量呢？！</p>
+<p>来看网友对Node.js运行机制给出的一个比喻：</p>
+<blockquote>
+<p>…NodeJS在寒风中面对着10万并发大军，OK，没问题，上来敌人一个扔到城里，上来一个又扔到城里。城里全民皆兵，可以很好地消化这些敌人…</p>
+<ul>
+<li><a href="https://www.cnblogs.com/peiyu1988/p/8032982.html" target="_blank" rel="noopener">Nodejs的运行原理-科普篇</a></li>
+</ul>
+</blockquote>
+<p>下图诠释了如上Node.js机制原理</p>
+<p><img src="../img/nodejs/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6.webp" alt="Nodejs运行机制"></p>
+<ul>
+<li>所有同步任务都在主线程上执行，形成一个执行栈</li>
+<li>主线程发起异步请求,相应的工作线程就会去执行异步任务,</li>
+<li>主线程可以继续执行后面的代码</li>
+<li>主线程之外，还存在一个”任务队列”（task queue）。只要异步任务</li>
+<li>有了运行结果，就在”任务队列”之中放置一个事件,也就是一个消息。</li>
+<li>一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。</li>
+<li>主线程把当前的事件执行完成之后,再去读取任务队列,如此反复重复执行,这样就形成了事件循环（Event Loop）。</li>
+<li>只要主线程空了，就会去读取”任务队列”，这就是JavaScript的运行机制。</li>
+<li>这个过程会不断重复。</li>
+</ul>
+<p>（重点）因此，Node.js的单线程并不是真正的单线程，只是开启了单个线程进行业务处理（cpu的运算），同时开启了其他线程专门处理I/O。当一个指令到达主线程，主线程发现有I/O之后，直接把这个事件传给I/O线程，不会等待I/O结束后，再去处理下面的业务，而是拿到一个状态后立即往下走，这就是“单线程”、“异步I/O”。</p>
+<p>I/O处理完之后会有一个回调事件，这个事件会放在一个事件处理队列里头，在进程启动时node会创建一个类似于While(true)的循环，它的每一次轮询（tick）都会去查看是否有事件需要处理，是否有事件关联的回调函数需要处理，如果有就处理，然后加入下一个轮询，如果没有就退出进程，这就是所谓的“事件驱动”。这也从Node的角度解释了什么是”事件驱动”。</p>
+<p>在node.js中，事件主要来源于网络请求，文件I/O等，根据事件的不同对观察者进行了分类，有文件I/O观察者，网络I/O观察者。事件驱动是一个典型的生产者/消费者模型，请求到达观察者那里，事件循环从观察者进行消费，主线程就可以马不停蹄的只关注业务不用再去进行I/O等待。</p>
+<p><img src="../img/nodejs/nodejs-EventLoop.webp" alt="非阻塞IO"></p>
+<p>（1）V8 JavaScript引擎负责解析JavaScript脚本并执行代码。</p>
+<p>（2）解析后的代码，调用Node API。</p>
+<p>（3）libuv库负责NodeAPI的执行。它将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。</p>
+<p>（4）V8引擎再将结果返回给用户。</p>
+<p>看到没，NodeJS的工作原理其实就是事件循环。可以说每一条NodeJS的逻辑都是写在回调函数里面的，而回调函数都是有返回之后才异步执行的！<br>看到这里，你不禁会惊叹，NodeJS如果所有处理都异步，岂不是晓得飞了？错错错！当然不是，不要忘记，NodeJS实现这些的基础是单线程。没错，单线程！一条线程扛起所有操作！<br>你可以想象一下，NodeJS在寒风中面对着10万并发大军，OK，没问题，上来敌人一个扔到城里，上来一个又扔到城里。城里全民皆兵，可以很好地消化这些敌人。但如果上来一个类似于张飞赵云这样的人物，老Node心里一惨，和张飞大战300回合，把他打残了，再扔到城里。那后面的10万大军就得等这300回合。。。<br>所以这说明什么？说明NodeJS不是没有阻塞，而是阻塞不发生在后续回调的流程，而会发生在NodeJS本身对逻辑的计算和处理。我们已经知道，NodeJS的分发能力无比强大，可以循环事件进行异步回调。但如果在循环事件时遇到复杂的逻辑运算，那么单薄的单线程怎么支撑得起上百万的逻辑+并发呢？NodeJS它的所有I/O、网络通信等比较耗时的操作，都可以交给worker threads执行再回调，所以很快。但CPU的正常操作，它就只能自己抗了。<br>说到这里，各位对NodeJS的特性估计也大概有个谱了。所以说适用的场景基本是呼之欲出了~！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" data-id="ck8wqamuq000kyurn7dnz956t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" rel="tag">阅读摘抄</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">环境搭建-docker下zookeeper+kafka</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript%E5%BC%95%E6%93%8E/" rel="tag">JavaScript引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zookeeper/" rel="tag">zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8/" rel="tag">事件驱动</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E5%88%B0%E8%80%81/" rel="tag">学到老</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" rel="tag">开发技能</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" rel="tag">数据密集型</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="tag">环境搭建</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" rel="tag">系统架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/" rel="tag">计算机原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" rel="tag">阅读摘抄</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%9E%E9%98%BB%E5%A1%9EI-O/" rel="tag">非阻塞I/O</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/JavaScript%E5%BC%95%E6%93%8E/" style="font-size: 10px;">JavaScript引擎</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/Nodejs%E5%8E%9F%E7%90%86/" style="font-size: 15px;">Nodejs原理</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8/" style="font-size: 10px;">事件驱动</a> <a href="/tags/%E5%AD%A6%E5%88%B0%E8%80%81/" style="font-size: 10px;">学到老</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" style="font-size: 10px;">开发技能</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" style="font-size: 10px;">数据密集型</a> <a href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" style="font-size: 10px;">环境搭建</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">系统架构</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/" style="font-size: 10px;">计算机原理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" style="font-size: 10px;">阅读摘抄</a> <a href="/tags/%E9%9D%9E%E9%98%BB%E5%A1%9EI-O/" style="font-size: 10px;">非阻塞I/O</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Shiyunlai<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

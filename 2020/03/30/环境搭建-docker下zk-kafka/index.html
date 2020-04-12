@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>环境搭建-docker下zookeeper+kafka | Shiyunlai&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="ITP平台中准备使用kafka作为队列，重构升级指令供，于是本地弄一套Kafka方便测试Node.js相关的代码。 以下环境搭建前提：  Mac Docker 19.03.8  搭建步骤查看本机ip1$ ifconfig en0 输出 12345678en0: flags&#x3D;8863&lt;UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST&gt; m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="环境搭建-docker下zookeeper+kafka">
+<meta property="og:url" content="http://yoursite.com/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/index.html">
+<meta property="og:site_name" content="Shiyunlai&#39;s Blog">
+<meta property="og:description" content="ITP平台中准备使用kafka作为队列，重构升级指令供，于是本地弄一套Kafka方便测试Node.js相关的代码。 以下环境搭建前提：  Mac Docker 19.03.8  搭建步骤查看本机ip1$ ifconfig en0 输出 12345678en0: flags&#x3D;8863&lt;UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST&gt; m">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-0.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-1.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-2.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-3.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-4.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-5.png">
+<meta property="article:published_time" content="2020-03-30T11:44:02.000Z">
+<meta property="article:modified_time" content="2020-04-12T07:30:09.482Z">
+<meta property="article:author" content="Shiyunlai">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="zookeeper">
+<meta property="article:tag" content="kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/03/30/img/soft_install/Kafka-Manager-0.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shiyunlai&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Shiyunlai&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Keep hungry, keep foolish</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-环境搭建-docker下zk-kafka" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" class="article-date">
+  <time datetime="2020-03-30T11:44:02.000Z" itemprop="datePublished">2020-03-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      环境搭建-docker下zookeeper+kafka
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ITP平台中准备使用kafka作为队列，重构升级指令供，于是本地弄一套Kafka方便测试Node.js相关的代码。</p>
+<p>以下环境搭建前提：</p>
+<ol>
+<li>Mac</li>
+<li>Docker 19.03.8</li>
+</ol>
+<h1 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h1><h2 id="查看本机ip"><a href="#查看本机ip" class="headerlink" title="查看本机ip"></a>查看本机ip</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ifconfig en0</span></span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">en0: flags&#x3D;8863&lt;UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST&gt; mtu 1500</span><br><span class="line">	options&#x3D;400&lt;CHANNEL_IO&gt;</span><br><span class="line">	ether f8:ff:c2:44:c0:12 </span><br><span class="line">	inet6 fe80::1804:f18d:fb:655c%en0 prefixlen 64 secured scopeid 0x6 </span><br><span class="line">	inet 99.15.217.9 netmask 0xffffff00 broadcast 99.15.217.255</span><br><span class="line">	nd6 options&#x3D;201&lt;PERFORMNUD,DAD&gt;</span><br><span class="line">	media: autoselect</span><br><span class="line">	status: active</span><br></pre></td></tr></table></figure>
+
+<p>其中99.15.217.9 这个IP在下面的命令行中要用。</p>
+<blockquote>
+<p>注意：为了在多网络环境切换，建议使用ihost文件，配置多组IP和域名对照，之后把所有ip替换为域名：</p>
+<ul>
+<li>公司环境</li>
+</ul>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">99.15.217.9	kafka1</span><br><span class="line">99.15.217.9	kafka2</span><br><span class="line">99.15.217.9	kafka3</span><br><span class="line">99.15.217.9	zookeeper</span><br><span class="line">99.15.217.9	kafka-manager</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>居家环境</li>
+</ul>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.4	kafka1</span><br><span class="line">192.168.1.4	kafka2</span><br><span class="line">192.168.1.4	kafka3</span><br><span class="line">192.168.1.4	zookeeper</span><br><span class="line">192.168.1.4	kafka-manager</span><br></pre></td></tr></table></figure>
+
+<p>如此，只要切换一下ihost，重启docker即可顺利完成环境重启！</p>
+<h2 id="下载zookeeper镜像"><a href="#下载zookeeper镜像" class="headerlink" title="下载zookeeper镜像"></a>下载zookeeper镜像</h2><p>$ docker pull wurstmeister/zookeeper</p>
+<h2 id="下载kafka镜像"><a href="#下载kafka镜像" class="headerlink" title="下载kafka镜像"></a>下载kafka镜像</h2><p>$ docker pull wurstmeister/kafka</p>
+<h2 id="下载图形化kafka管理镜像"><a href="#下载图形化kafka管理镜像" class="headerlink" title="下载图形化kafka管理镜像"></a>下载图形化kafka管理镜像</h2><p>$ docker pull sheepkiller/kafka-manager</p>
+<h2 id="下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）"><a href="#下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）" class="headerlink" title="下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）"></a>下载一个图形化zookeeper工具（可执行jar包，这个不是镜像）</h2><p><a href="https://www.jianshu.com/go-wild?ac=2&url=https%3A%2F%2Fissues.apache.org%2Fjira%2Fsecure%2Fattachment%2F12436620%2FZooInspector.zip" target="_blank" rel="noopener">zookeeper-dev-ZooInspector.zip</a></p>
+<p>解压启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar build/zookeeper-dev-ZooInspector.jar</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动zookeeper"><a href="#启动zookeeper" class="headerlink" title="启动zookeeper"></a>启动zookeeper</h2><p>docker run -d –name zookeeper -p 2181:2181 -t wurstmeister/zookeeper</p>
+<h2 id="启动kafka（集群方式）"><a href="#启动kafka（集群方式）" class="headerlink" title="启动kafka（集群方式）"></a>启动kafka（集群方式）</h2><ul>
+<li>kafka节点 1</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=99.15.217.9:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://99.15.217.9:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>kafka节点 2</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d --name kafka1 -p 9093:9093 -e KAFKA_BROKER_ID=1 -e KAFKA_ZOOKEEPER_CONNECT=99.15.217.9:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://99.15.217.9:9093 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9093 -t wurstmeister/kafka</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>kafka节点3</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d --name kafka2 -p 9094:9094 -e KAFKA_BROKER_ID=2 -e KAFKA_ZOOKEEPER_CONNECT=99.15.217.9:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://99.15.217.9:9094 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9094 -t wurstmeister/kafka</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>–name kafka 指定不同的docker容器名称，不要重复</li>
+<li>-e KAFKA_BROKER_ID 指定kafka的Broker序号，不要重复</li>
+<li>-e KAFKA_ZOOKEEPER_CONNECT 指定所用zookeeper的地址端口</li>
+<li>-e KAFKA_ADVERTISED_LISTENERS 指定Kafka的监听端口</li>
+<li>-e KAFKA_LISTENERS 指定Kafka的监听端口</li>
+<li>-t wurstmeister/kafka 所使用的Docker镜像</li>
+</ul>
+</blockquote>
+<h2 id="检测一下启动情况，主要看看端口"><a href="#检测一下启动情况，主要看看端口" class="headerlink" title="检测一下启动情况，主要看看端口"></a>检测一下启动情况，主要看看端口</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netstat -an | grep 2181</span><br><span class="line">netstat -an | grep 9092</span><br><span class="line">netstat -an | grep 9093</span><br><span class="line">netstat -an | grep 9094</span><br></pre></td></tr></table></figure>
+
+<p>再看一看Docker容器情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker ps -a</span></span><br></pre></td></tr></table></figure>
+<p>如果Docker容器启动出现错误，可查看容器运行日志，如，查看id为dc9208a3303fee的容器运行日志的最后1000行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker logs dc9208a3303fee --tail 1000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查看docker容器，并启动"><a href="#查看docker容器，并启动" class="headerlink" title="查看docker容器，并启动"></a>查看docker容器，并启动</h2><p>如果正常执行过以上步骤，之后可直接启动docker容器，如下：</p>
+<p>查看容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker ps</span></span><br><span class="line">Mac:gitee megapro$ docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                            PORTS               NAMES</span><br><span class="line">d281bab38702        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 4 minutes ago                            kafka2</span><br><span class="line">b2ae4f0b7c09        sheepkiller/kafka-manager   "./start-kafka-manag…"   7 days ago          Exited (143) 4 minutes ago                            kafka-manager</span><br><span class="line">119a70531dbc        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 3 minutes ago                            kafka1</span><br><span class="line">e1d2bcb81ff2        wurstmeister/kafka          "start-kafka.sh"         7 days ago          Exited (137) 3 days ago                               kafka</span><br><span class="line">156a5c4c0e41        wurstmeister/zookeeper      "/bin/sh -c '/usr/sb…"   7 days ago          Exited (137) About a minute ago                       zookeeper</span><br></pre></td></tr></table></figure>
+
+<p>启动zookeeper+kafka</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker start 156a5c4c0e41</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start e1d2bcb81ff2</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start 119a70531dbc</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start d281bab38702</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker start b2ae4f0b7c09</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="做个测试"><a href="#做个测试" class="headerlink" title="做个测试"></a>做个测试</h2><p>场景：登录kafka主机，创建一个topic，向topic发送消息，使用consumer接收消息</p>
+<p>进入kafka容器的命令行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker <span class="built_in">exec</span> -ti kafka /bin/bash</span></span><br></pre></td></tr></table></figure>
+<p>进入kafka所在目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> opt/kafka_2.12-1.1.0/bin</span></span><br></pre></td></tr></table></figure>
+<p>创建Replication为2，Partition为2的topic = partopic:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-topics.sh --create --zookeeper 99.15.217.9:2181 --replication-factor 2 --partitions 2 --topic partopic</span></span><br></pre></td></tr></table></figure>
+
+<p>查看topic状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-topics.sh --describe --zookeeper 99.15.217.9:2181 --topic partopic</span></span><br></pre></td></tr></table></figure>
+
+<p>作为Producer生产消息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-console-producer.sh --broker-list 99.15.217.9:9092 --topic partopic</span></span><br></pre></td></tr></table></figure>
+
+<p>新开一个终端，作为Consumer接收消息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker <span class="built_in">exec</span> -it kafka /bin/bash</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> opt/kafka_2.12-1.1.0/bin</span></span><br></pre></td></tr></table></figure>
+
+<p>接收消息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./kafka-console-consumer.sh --bootstrap-server 99.15.217.9:9092 --topic partopic --from-beginning</span></span><br><span class="line">···</span><br><span class="line"></span><br><span class="line">至此验证成功！</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 启动kafka管理界面服务kafka-manager</span></span></span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta">$</span><span class="bash"> docker run -itd --restart=always --name=kafka-manager -p 9000:9000 -e ZK_HOSTS=99.15.217.9:2181  sheepkiller/kafka-manager</span></span><br></pre></td></tr></table></figure>
+
+<p>访问: <a href="http://localhost:9000" target="_blank" rel="noopener">http://localhost:9000</a></p>
+<p><img src="../img/soft_install/Kafka-Manager-0.png" alt="0"></p>
+<p>添加一个cluster</p>
+<p><img src="../img/soft_install/Kafka-Manager-1.png" alt="0"></p>
+<p>确定，然后就能查看kafak的集群信息</p>
+<p><img src="../img/soft_install/Kafka-Manager-2.png" alt="0"></p>
+<p>查看topic信息</p>
+<p><img src="../img/soft_install/Kafka-Manager-3.png" alt="0"></p>
+<p>查看Broker们的信息</p>
+<p><img src="../img/soft_install/Kafka-Manager-4.png" alt="0"></p>
+<p>环境好了，去写代码和kafka集成吧！</p>
+<h2 id="跑个Node-js代码试一下"><a href="#跑个Node-js代码试一下" class="headerlink" title="跑个Node.js代码试一下"></a>跑个Node.js代码试一下</h2><p><a href="https://www.npmjs.com/package/kafkajs" target="_blank" rel="noopener">kafkajs Getting Started</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; Kafka &#125; = <span class="built_in">require</span>(<span class="string">'kafkajs'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> kafka = <span class="keyword">new</span> Kafka(&#123;</span><br><span class="line">    clientId: <span class="string">'my-app'</span>,</span><br><span class="line">    brokers: [<span class="string">'127.0.0.1:9092'</span>, <span class="string">'127.0.0.1:9093'</span>]</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> producer = kafka.producer()</span><br><span class="line"><span class="keyword">const</span> consumer = kafka.consumer(&#123; <span class="attr">groupId</span>: <span class="string">'test-group'</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> run = <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">    <span class="comment">// Producing</span></span><br><span class="line">    <span class="keyword">await</span> producer.connect()</span><br><span class="line">    <span class="keyword">await</span> producer.send(&#123;</span><br><span class="line">        topic: <span class="string">'test-topic'</span>,</span><br><span class="line">        messages: [</span><br><span class="line">            &#123; <span class="attr">value</span>: <span class="string">'Hello KafkaJS user!'</span> &#125;,</span><br><span class="line">        ],</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Consuming</span></span><br><span class="line">    <span class="keyword">await</span> consumer.connect()</span><br><span class="line">    <span class="keyword">await</span> consumer.subscribe(&#123; <span class="attr">topic</span>: <span class="string">'test-topic'</span>, <span class="attr">fromBeginning</span>: <span class="literal">true</span> &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> consumer.run(&#123;</span><br><span class="line">        eachMessage: <span class="keyword">async</span> (&#123; topic, partition, message &#125;) =&gt; &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(&#123;</span><br><span class="line">                partition,</span><br><span class="line">                offset: message.offset,</span><br><span class="line">                value: message.value.toString(),</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">run().catch(<span class="built_in">console</span>.error)</span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">npm i kafkajs -S</span></span><br><span class="line"><span class="meta">$</span><span class="bash">node s1.js</span></span><br></pre></td></tr></table></figure>
+
+<p>输出<br><img src="../img/soft_install/Kafka-Manager-5.png" alt="0"></p>
+<h2 id="主要参考资料"><a href="#主要参考资料" class="headerlink" title="主要参考资料"></a>主要参考资料</h2><ul>
+<li><a href="https://www.jianshu.com/p/fe73765ef74d" target="_blank" rel="noopener">Mac 使用 docker 搭建 kafka 集群 + Zookeeper + kafka-manager</a></li>
+<li><a href="https://www.jianshu.com/p/e642793cd5de" target="_blank" rel="noopener">docker 安装zookeeper+kafka单节点</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/" data-id="ck8wqamuo000jyurngogo1jfy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zookeeper/" rel="tag">zookeeper</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="tag">环境搭建</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          nodejs-运行机制学习摘抄
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">nodejs-执行栈callstack</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript%E5%BC%95%E6%93%8E/" rel="tag">JavaScript引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs%E5%8E%9F%E7%90%86/" rel="tag">Nodejs原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zookeeper/" rel="tag">zookeeper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8/" rel="tag">事件驱动</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E5%88%B0%E8%80%81/" rel="tag">学到老</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" rel="tag">开发技能</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" rel="tag">数据密集型</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="tag">环境搭建</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" rel="tag">系统架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/" rel="tag">计算机原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" rel="tag">阅读摘抄</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%9E%E9%98%BB%E5%A1%9EI-O/" rel="tag">非阻塞I/O</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/JavaScript%E5%BC%95%E6%93%8E/" style="font-size: 10px;">JavaScript引擎</a> <a href="/tags/Node-js/" style="font-size: 20px;">Node.js</a> <a href="/tags/Nodejs/" style="font-size: 10px;">Nodejs</a> <a href="/tags/Nodejs%E5%8E%9F%E7%90%86/" style="font-size: 15px;">Nodejs原理</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a> <a href="/tags/zookeeper/" style="font-size: 10px;">zookeeper</a> <a href="/tags/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8/" style="font-size: 10px;">事件驱动</a> <a href="/tags/%E5%AD%A6%E5%88%B0%E8%80%81/" style="font-size: 10px;">学到老</a> <a href="/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" style="font-size: 10px;">开发技能</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%AF%86%E9%9B%86%E5%9E%8B/" style="font-size: 10px;">数据密集型</a> <a href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" style="font-size: 10px;">环境搭建</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">系统架构</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/" style="font-size: 10px;">计算机原理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">读书笔记</a> <a href="/tags/%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/" style="font-size: 10px;">阅读摘抄</a> <a href="/tags/%E9%9D%9E%E9%98%BB%E5%A1%9EI-O/" style="font-size: 10px;">非阻塞I/O</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/03/31/nodejs-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E9%98%85%E8%AF%BB%E6%91%98%E6%8A%84/">nodejs-运行机制学习摘抄</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/30/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA-docker%E4%B8%8Bzk-kafka/">环境搭建-docker下zookeeper+kafka</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/29/nodejs-%E6%89%A7%E8%A1%8C%E6%A0%88callstack/">nodejs-执行栈callstack</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/19/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a>
+          </li>
+        
+          <li>
+            <a href="/2020/03/16/nodejs-%E6%91%98%E6%8A%84/">nodejs-摘抄</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Shiyunlai<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
